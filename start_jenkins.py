@@ -1,16 +1,24 @@
 import boto3
-region = 'us-east-1'
+import logging
+
+#region = 'us-east-1'    
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
-def lambda_handler(tagkey, tagvalue):
-
+def lambda_handler(event, context):
+    logger.info('got event{}'.format(event))
+    logger.info('TAG={}'.format(event['tag']))
+    logger.info('Value={}'.format(event['value']))
+    
     ec2client = boto3.client('ec2')
-
+    region = event['region']
+    
     response = ec2client.describe_instances(
         Filters=[
             {
-                'Name': 'tag:'+'Name',
-                'Values': ['Jenkins']
+                'Name': 'tag:'+ event['tag'],
+                'Values': [event['value']]
             }
         ]
     )
